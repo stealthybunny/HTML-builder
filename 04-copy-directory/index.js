@@ -1,7 +1,5 @@
 const fs = require('fs');
 const path = require('path');
-const rimraf = require('rimraf');
-
 
 const folderPath = path.join(__dirname, 'files');
 const newFolder = path.join(__dirname, 'files-copy');
@@ -9,8 +7,9 @@ const newFolder = path.join(__dirname, 'files-copy');
 fs.exists(newFolder, (exists) => {
   if (exists) {
     console.log(`Drectory 'files-copy' already exists`);
-    rimraf(newFolder, () => {
-      console.log(`Existing directory 'files-copy' was succsessfully deleted!`);
+    fs.promises.rm(newFolder, {recursive:true})
+    .then(()=> {
+      console.log(`Existing folder 'filse-copy' has been deleted`)
       createNewFolder()
     })
   }
@@ -20,9 +19,10 @@ fs.exists(newFolder, (exists) => {
 })
 
 function createNewFolder() {
+  console.log('Start copying....')
   fs.mkdir(newFolder, {recursive: true}, err => {
     if (err) throw err;
-    console.log(`New directory "files-copy" has been created!`);
+    console.log('New folder has been created')
     newFolderContent()
   })
 }
@@ -48,7 +48,7 @@ function newFolderContent() {
           })
         }
       }
-      console.log('All files are copied!')
+      console.log(`All files (${files.length}) have been copied in 'files-copy'!`)
     }
   })
 }
