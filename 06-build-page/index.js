@@ -30,21 +30,25 @@ function HTMLcreator() {
     let templateContent = htmlTemplate;
     const re = /\{\{+[a-z]+\}\}/gi;
     const tagArr = htmlTemplate.match(re);
-    for (let tag of tagArr) {
-      const tagName = tag.slice(2,-2)
-      const componentPath = path.join(__dirname, 'components', `${tagName}.html`);
-      fs.promises.readFile(componentPath, {encoding: 'utf-8'})
-      .then((component) => {
-        templateContent = templateContent.replace(tag, component);
-        fs.promises.writeFile(path.join(__dirname, 'project-dist', 'index.html'), templateContent)
-      })
-    }
+    creatorCycle(tagArr, templateContent);
   })
   .then(() => {
     console.log('index.html has been created')
     mergeStyles();
     copyFolder();
   })
+}
+
+async function creatorCycle(array, templateContent) {
+  for (let tag of array) {
+    const tagName = tag.slice(2,-2)
+    const componentPath = path.join(__dirname, 'components', `${tagName}.html`);
+    await fs.promises.readFile(componentPath, {encoding: 'utf-8'})
+    .then((component) => {
+    templateContent = templateContent.replace(tag, component);
+    fs.promises.writeFile(path.join(__dirname, 'project-dist', 'index.html'), templateContent)
+    })
+  }
 }
 
 
